@@ -16,6 +16,12 @@ import { createOrderData, state, updateDragging } from "./data.js";
 
 html.other.add.focus();
 
+/**
+ * This function is responsible for handling the dragover event. It is called
+ * 
+ * @param {*} event - The dragover event
+ * @returns 
+ */
 const handleDragOver = (event) => {
   event.preventDefault();
   const path = event.path || event.composedPath();
