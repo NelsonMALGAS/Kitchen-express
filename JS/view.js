@@ -1,157 +1,250 @@
-import { TABLES, COLUMNS, state } from './data.js'
+import { TABLES, COLUMNS, state } from "./data.js";
 
-/**
- * Takes any order as an object literal (as saved in state) and converts it a
- * HTML element that can be appended to the DOM. Creating order elements
- * individually prevents the JavaScript having to re-render the entire DOM every
- * time an new order is created.
- *
- * @param {object} order 
- * @returns {HTMLElement}
- */
+const formatTime = (date) => {
+  const value = new Date(date);
+
+  return value.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
+const escapeHtml = (value) =>
+  String(value).replace(/[&<>"']/g, (character) => {
+    const entities = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;",
+    };
+
+    return entities[character];
+  });
+
 export const createOrderHtml = (order) => {
-    const { id, title, table, created } = order
+  const { id, title, table, created, column } = order;
 
-    const element = document.createElement('div')
-    element.className = 'order'
-    element.draggable = true
-    element.dataset.id = id
+  const element = document.createElement("article");
+  element.className = "order";
+  element.draggable = true;
+  element.dataset.id = id;
+  element.dataset.order = "";
 
-    const hours = created.getHours().toString().padStart(2, '0')
-    const minutes = created.getMinutes().toString().padStart(2, '0')
+  element.innerHTML = `
+    <div class="order__title" data-order-title>
+      ${escapeHtml(title)}
+    </div>
 
-    element.innerHTML = /* html */ `
-      <div class = "order" data-order data-id='${id}'>
-        <div class="order__title" data-order-title>${title}</div>
-        
-        <dl class="order__details">
-            <div class="order__row">
-                <dt>Table:</dt>
-                <dd class="order__value" data-order-table>${table}</dd>
-            </div>
-
-            <div class="order__row">
-                <dt>Ordered:</dt>
-                <dd class="order__value">${hours}:${minutes}</dd>
-            </div>
-        </dl>
+    <dl class="order__details">
+      <div class="order__row">
+        <dt>Table:</dt>
+        <dd class="order__value" data-order-table>
+          ${escapeHtml(table)}
+        </dd>
       </div>
-    `
 
-    return element
-}
+      <div class="order__row">
+        <dt>Ordered:</dt>
+        <dd class="order__value">
+          ${formatTime(created)}
+        </dd>
+      </div>
 
-/**
- * Since the tables in use, and their identification can be configured before
- * the start of the app (in data.js), the actual options returned should be
- * dynamically added to the respective "<select>" elements in the HTML after
- * JavaScript loads. This function executes the logic thar reads the current
- * tables and creates the HTML to select them.
- *
- * @returns {HTMLElement}
- */
+      <div class="order__row">
+        <dt>Status:</dt>
+        <dd class="order__value">
+          ${escapeHtml(column)}
+        </dd>
+      </div>
+    </dl>
+  `;
+
+  return element;
+};
+
 export const createTableOptionsHtml = () => {
-    const fragment = document.createDocumentFragment()
+  const fragment = document.createDocumentFragment();
 
-    for (const singleTable of TABLES) {
-        const option = document.createElement('option')
-        option.value = singleTable
-        option.innerText = singleTable
-        fragment.appendChild(option)
-    }
+  TABLES.forEach((table) => {
+    const option = document.createElement("option");
+    option.value = table;
+    option.textContent = table;
+    fragment.appendChild(option);
+  });
 
-    return fragment
-}
+  return fragment;
+};
 
-/**
- * An object literal that contains references to all the HTML elements
- * referenced through the operation of the app either upon initialisation or
- * while its running (via event listeners). This ensure that all UI elements can
- * be accessed and seen in a structured manner in a single data structure.
- *
- * Note that the "column" and "area" properties created as empty and then added
- * dynamically by a loop that runs over the COLUMNS array.
- */
 export const html = {
-    columns: {},
-    area: {},
-    add: {
-        overlay: document.querySelector('[data-add-overlay]'),
-        form: document.querySelector('[data-add-form]'),
-        cancel: document.querySelector('[data-add-cancel]'),
-        title: document.querySelector('[data-add-title]'),
-        table: document.querySelector('[data-add-table]'),
-    },
-    edit: {
-        overlay: document.querySelector('[data-edit-overlay]'),
-        form: document.querySelector('[data-edit-form]'),
-        cancel: document.querySelector('[data-edit-cancel]'),
-        title: document.querySelector('[data-edit-title]'),
-        table: document.querySelector('[data-edit-table]'),
-        id: document.querySelector('[data-edit-id]'),
-        column: document.querySelector('[data-edit-column]'),
-        delete: document.querySelector('[data-edit-delete]')
-    },
-    help: {
-        overlay: document.querySelector('[data-help-overlay]'),
-        cancel: document.querySelector('[data-help-cancel]'),
-    },
-    other: {
-        grid: document.querySelector('[data-grid]'),
-        help: document.querySelector('[data-help]'),
-        add: document.querySelector('[data-add]'),
-        order: document.querySelector('[data-order]'),
-    }
-}
+  columns: {},
+  area: {},
+
+  add: {
+    overlay: document.querySelector("[data-add-overlay]"),
+    form: document.querySelector("[data-add-form]"),
+    cancel: document.querySelector("[data-add-cancel]"),
+    title: document.querySelector("[data-add-title]"),
+    table: document.querySelector("[data-add-table]"),
+  },
+
+  edit: {
+    overlay: document.querySelector("[data-edit-overlay]"),
+    form: document.querySelector("[data-edit-form]"),
+    cancel: document.querySelector("[data-edit-cancel]"),
+    title: document.querySelector("[data-edit-title]"),
+    table: document.querySelector("[data-edit-table]"),
+    id: document.querySelector("[data-edit-id]"),
+    column: document.querySelector("[data-edit-column]"),
+    delete: document.querySelector("[data-edit-delete]"),
+  },
+
+  help: {
+    overlay: document.querySelector("[data-help-overlay]"),
+    cancel: document.querySelector("[data-help-cancel]"),
+  },
+
+  other: {
+    grid: document.querySelector("[data-grid]"),
+    help: document.querySelector("[data-help]"),
+    add: document.querySelector("[data-add]"),
+    order: document.querySelector("[data-order]"),
+  },
+
+  dashboard: {
+    total: document.querySelector("#total-orders"),
+    active: document.querySelector("#active-orders"),
+    completed: document.querySelector("#completed-orders"),
+    revenue: document.querySelector("#total-revenue"),
+    date: document.querySelector("#current-date"),
+  },
+
+  search: document.querySelector("[data-search]"),
+  tableFilter: document.querySelector("[data-filter-table]"),
+};
 
 for (const columnName of COLUMNS) {
-    html.columns[columnName] = document.querySelector(`[data-column="${columnName}"]`)
-    html.area[columnName] = document.querySelector(`[data-area="${columnName}"]`)
+  html.columns[columnName] = document.querySelector(
+    `[data-column="${columnName}"]`,
+  );
+
+  html.area[columnName] = document.querySelector(`[data-area="${columnName}"]`);
 }
 
-/**
- * Maps over all columns in the HTML and removes any dragging hover effects
- * except for the current column that is being dragged over (if at all). If the
- * "over" value is not specified, then all columns will be cleared of any hover
- * effects.
- *
- * @param {object} newDragging 
- */
-export const updateDraggingHtml = (newDragging) => {
-    const { over = state.dragging.over } = newDragging
+export const updateDashboard = () => {
+  const orders = Object.values(state.orders);
 
-    for (const columnName of COLUMNS) {
-        const value = columnName === over ? 'rgba(0, 160, 70, 0.2)' : ''
-        html.area[columnName].style.backgroundColor = value
+  const total = orders.length;
+  const completed = orders.filter((order) => order.column === "served").length;
+  const active = total - completed;
+
+  if (html.dashboard.total) {
+    html.dashboard.total.textContent = total;
+  }
+
+  if (html.dashboard.active) {
+    html.dashboard.active.textContent = active;
+  }
+
+  if (html.dashboard.completed) {
+    html.dashboard.completed.textContent = completed;
+  }
+
+  if (html.dashboard.date) {
+    html.dashboard.date.textContent = new Date().toLocaleDateString(undefined, {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  }
+
+  COLUMNS.forEach((column) => {
+    const count = orders.filter((order) => order.column === column).length;
+
+    const countElement = document.querySelector(`[data-count="${column}"]`);
+
+    if (countElement) {
+      countElement.textContent = count;
     }
-}
+  });
+};
 
-/**
- * Takes a specific order HTML and clones it into memory. The original HTML
- * element is then removed from the DOM, while the cloned duplicate is added to
- * the bottom of the column that is specified.
- *
- * @param {string} id - The "id" value of a specific order object. Note that
- * only the "id" value is used, not the entire object.
- *
- * @param {string} newColumn - The name of the column that the order should be
- * moved to. This should coincide with one of the values present in the COLUMNS
- * array in "data.js"
- */
+export const updateDraggingHtml = ({ over = state.dragging.over } = {}) => {
+  COLUMNS.forEach((columnName) => {
+    const area = html.area[columnName];
+
+    if (!area) return;
+
+    area.style.backgroundColor =
+      columnName === over ? "rgba(0, 160, 70, 0.15)" : "";
+  });
+};
+
 export const moveToColumn = (id, newColumn) => {
-    const htmlSource = document.querySelector(`[data-id="${id}"]`) 
-    const duplicate = htmlSource.cloneNode(true)
-    html.columns[newColumn].appendChild(duplicate)
-    htmlSource.remove()
+  const order = state.orders[id];
+  const destination = html.columns[newColumn];
+
+  if (!order || !destination || !COLUMNS.includes(newColumn)) return;
+
+  order.column = newColumn;
+  order.updated = new Date();
+
+  const existingElement = document.querySelector(
+    `.order[data-id="${CSS.escape(id)}"]`,
+  );
+
+  if (existingElement) {
+    existingElement.remove();
+  }
+
+  destination.appendChild(createOrderHtml(order));
+
+  updateDashboard();
+};
+
+export const renderOrders = () => {
+  COLUMNS.forEach((column) => {
+    if (html.columns[column]) {
+      html.columns[column].innerHTML = "";
+    }
+  });
+
+  Object.values(state.orders).forEach((order) => {
+    const destination = html.columns[order.column];
+
+    if (destination) {
+      destination.appendChild(createOrderHtml(order));
+    }
+  });
+
+  updateDashboard();
+  applyOrderFilters();
+};
+
+export const applyOrderFilters = () => {
+  const searchTerm = html.search?.value.trim().toLowerCase() || "";
+  const selectedTable = html.tableFilter?.value || "";
+
+  document.querySelectorAll(".order[data-id]").forEach((element) => {
+    const order = state.orders[element.dataset.id];
+
+    if (!order) return;
+
+    const matchesSearch =
+      order.title.toLowerCase().includes(searchTerm) ||
+      order.table.toLowerCase().includes(searchTerm);
+
+    const matchesTable = !selectedTable || order.table === selectedTable;
+
+    element.hidden = !(matchesSearch && matchesTable);
+  });
+};
+
+if (html.add.table) {
+  html.add.table.appendChild(createTableOptionsHtml());
 }
 
-/**
- * Starts the app focused on the "add order" button. This means that users can
- * immediately started adding an order by pressing the enter or spacebar.
- */
-html.other.add.focus()
-
-
-html.add.table.appendChild(createTableOptionsHtml())
-html.edit.table.appendChild(createTableOptionsHtml())
-
+if (html.edit.table) {
+  html.edit.table.appendChild(createTableOptionsHtml());
+}

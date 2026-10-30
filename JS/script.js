@@ -1,99 +1,62 @@
+import {
+  html,
+  createOrderHtml,
+  moveToColumn,
+  updateDraggingHtml,
+  updateDashboard,
+  renderOrders,
+  applyOrderFilters,
+} from "./view.js";
 
-/**
- * A handler that fires when a user drags over any element inside a column. In
- * order to determine which column the user is dragging over the entire event
- * bubble path is checked with `event.path` (or `event.composedPath()` for
- * browsers that don't support `event.path`). The bubbling path is looped over
- * until an element with a `data-area` attribute is found. Once found both the
- * active dragging column is set in the `state` object in "data.js" and the HTML
- * is updated to reflect the new column.
- *
- * @param {Event} event
- */
+import {
+  createOrderData,
+  state,
+  updateDragging,
+  loadOrders,
+  saveOrders,
+} from "./data.js";
 
-import { html, createOrderHtml, moveToColumn, updateDraggingHtml } from "./view.js";
-import { createOrderData, state, updateDragging } from "./data.js";
-
-html.other.add.focus();
-
-/**
- * This function is responsible for handling the dragover event. It is called
- * 
- * @param {*} event - The dragover event
- * @returns 
- */
-const handleDragOver = (event) => {
-  event.preventDefault();
-  const path = event.path || event.composedPath();
-  let column = null;
-
-  for (const element of path) {
-    const { area } = element.dataset;
-    if (area) {
-      column = area;
-      break;
-    }
-  }
-
-  if (!column) return;
-  updateDragging({ over: column });
-  updateDraggingHtml({ over: column });
+const showOverlay = (overlay) => {
+  if (overlay) overlay.style.display = "block";
 };
 
-const handleHelpToggle = (event) => {
-  event.preventDefault();
-
-  const helpOverlay = html.help.overlay;
-
-  const isOverlayVisible = helpOverlay.style.display === "block";
-
-  if (isOverlayVisible) {
-    helpOverlay.style.display = "none";
-    html.other.add.focus();
-  } else {
-    helpOverlay.style.display = "block";
-    html.other.add.blur();
-  }
-};
-
-const handleDragStart = (event) => {
-  const id = event.target.dataset.id;
-  const element = document.querySelector(`[data-id="${id}"]`);
-  element.classList.add("dragging");
- 
-};
-
-const handleDragEnd = (event) => {
-  const { over } = state.dragging;
-  
-
-  // Get the order ID from the HTML element that was clicked
-  const id = event.target.dataset.id;
-  const element = document.querySelector(`[data-id="${id}"]`);
-  element.classList.remove("dragging");
- 
-  // Update the order in the DOM
-  moveToColumn(id, over);
+const hideOverlay = (overlay) => {
+  if (overlay) overlay.style.display = "none";
+  html.other.add?.focus();
 };
 
 const handleAddToggle = (event) => {
-  const addOverlay = html.add.overlay;
-  const isOverlayVisible = addOverlay.style.display === "block";
+  event?.preventDefault();
 
-  if (isOverlayVisible) {
-    addOverlay.style.display = "none";
-    html.other.add.focus();
+  const isVisible = html.add.overlay.style.display === "block";
+
+  if (isVisible) {
+    hideOverlay(html.add.overlay);
   } else {
-    addOverlay.style.display = "block";
-    html.other.add.blur();
+    showOverlay(html.add.overlay);
+    html.add.title?.focus();
+  }
+};
+
+const handleHelpToggle = (event) => {
+  event?.preventDefault();
+
+  const isVisible = html.help.overlay.style.display === "block";
+
+  if (isVisible) {
+    hideOverlay(html.help.overlay);
+  } else {
+    showOverlay(html.help.overlay);
   }
 };
 
 const handleAddSubmit = (event) => {
   event.preventDefault();
 
-  const title = html.add.title.value;
+  const title = html.add.title.value.trim();
   const table = html.add.table.value;
+
+  if (!title || !table) return;
 
   const order = createOrderData({
     title,
@@ -103,97 +66,172 @@ const handleAddSubmit = (event) => {
 
   state.orders[order.id] = order;
 
-  const element = createOrderHtml(order);
+  html.columns.ordered.appendChild(createOrderHtml(order));
 
-  const column = html.columns["ordered"];
-  column.append(element);
+  saveOrders();
+  updateDashboard();
 
-  handleAddToggle();
-  html.add.title.value = "";
+  html.add.form.reset();
   html.add.table.value = "1";
+
+  hideOverlay(html.add.overlay);
 };
 
 const handleEditToggle = (event) => {
   event.preventDefault();
 
-  const editOverlay = html.edit.overlay;
+  const orderElement = event.target.closest(".order[data-id]");
 
-  const isOverlayVisible = editOverlay.style.display === "block";
-
-  if (isOverlayVisible) {
-    editOverlay.style.display = "none";
-    html.other.add.focus();
-  } else if (!isOverlayVisible && event.target.className === "order") {
-    editOverlay.style.display = "block";
-
-    const id = event.target.dataset.id;
-
-    const order = state.orders[id];
-
-    html.edit.title.value = order.title;
-    html.edit.table.value = order.table;
-    html.edit.id.value = order.id;
-    html.edit.column.value = order.column;
-
-    html.other.add.blur();
+  if (html.edit.overlay.style.display === "block") {
+    hideOverlay(html.edit.overlay);
+    return;
   }
+
+  if (!orderElement) return;
+
+  const order = state.orders[orderElement.dataset.id];
+
+  if (!order) return;
+
+  html.edit.title.value = order.title;
+  html.edit.table.value = order.table;
+  html.edit.id.value = order.id;
+  html.edit.column.value = order.column;
+
+  showOverlay(html.edit.overlay);
+  html.edit.title.focus();
 };
+
 const handleEditSubmit = (event) => {
   event.preventDefault();
 
-  const title = html.edit.title.value;
-  const table = html.edit.table.value;
   const id = html.edit.id.value;
+  const order = state.orders[id];
+
+  if (!order) return;
+
+  const title = html.edit.title.value.trim();
+  const table = html.edit.table.value;
   const column = html.edit.column.value;
 
-  const order = state.orders[id];
+  if (!title || !table || !state.orders[id] || !html.columns[column]) return;
 
   order.title = title;
   order.table = table;
   order.column = column;
+  order.updated = new Date();
 
-  const element = document.querySelector(`[data-id="${id}"]`);
-  element.remove();
-  const newElement = createOrderHtml(order);
-  const newColumn = html.columns[column];
-  newColumn.append(newElement);
+  moveToColumn(id, column);
 
-  const editOverlay = html.edit.overlay;
-  editOverlay.style.display = "none";
-  html.other.add.focus();
+  saveOrders();
+  updateDashboard();
+
+  hideOverlay(html.edit.overlay);
 };
 
 const handleDelete = (event) => {
+  event.preventDefault();
+
   const id = html.edit.id.value;
 
-  const editOverlay = html.edit.overlay;
-  editOverlay.style.display = "none";
-  html.other.add.focus();
+  if (!state.orders[id]) return;
 
   delete state.orders[id];
 
-  const element = document.querySelector(`[data-id="${id}"]`);
-  element.remove();
+  document.querySelector(`.order[data-id="${CSS.escape(id)}"]`)?.remove();
+
+  saveOrders();
+  updateDashboard();
+
+  hideOverlay(html.edit.overlay);
 };
 
-html.add.cancel.addEventListener("click", handleAddToggle);
-html.other.add.addEventListener("click", handleAddToggle);
-html.add.form.addEventListener("submit", handleAddSubmit);
+const handleDragStart = (event) => {
+  const orderElement = event.target.closest(".order[data-id]");
 
-html.other.grid.addEventListener("click", handleEditToggle);
-html.edit.cancel.addEventListener("click", handleEditToggle);
-html.edit.form.addEventListener("submit", handleEditSubmit);
-html.edit.delete.addEventListener("click", handleDelete);
+  if (!orderElement) return;
 
-html.help.cancel.addEventListener("click", handleHelpToggle);
-html.other.help.addEventListener("click", handleHelpToggle);
+  updateDragging({
+    source: orderElement.dataset.id,
+    over: null,
+  });
 
-for (const htmlColumn of Object.values(html.columns)) {
-  htmlColumn.addEventListener("dragstart", handleDragStart);
-  htmlColumn.addEventListener("dragend", handleDragEnd);
-}
+  event.dataTransfer.effectAllowed = "move";
+  event.dataTransfer.setData("text/plain", orderElement.dataset.id);
 
-for (const htmlArea of Object.values(html.area)) {
-  htmlArea.addEventListener("dragover", handleDragOver);
-}
+  orderElement.classList.add("dragging");
+};
 
+const handleDragOver = (event) => {
+  event.preventDefault();
+
+  const area = event.target.closest("[data-area]");
+
+  if (!area) return;
+
+  const column = area.dataset.area;
+
+  if (!column || !html.columns[column]) return;
+
+  updateDragging({ over: column });
+  updateDraggingHtml({ over: column });
+
+  event.dataTransfer.dropEffect = "move";
+};
+
+const handleDrop = (event) => {
+  event.preventDefault();
+
+  const area = event.target.closest("[data-area]");
+  const column = area?.dataset.area;
+
+  const id = event.dataTransfer.getData("text/plain") || state.dragging.source;
+
+  if (id && column && state.orders[id]) {
+    moveToColumn(id, column);
+    saveOrders();
+  }
+
+  updateDragging({ source: null, over: null });
+  updateDraggingHtml({ over: null });
+};
+
+const handleDragEnd = (event) => {
+  event.target.closest(".order[data-id]")?.classList.remove("dragging");
+
+  updateDragging({ source: null, over: null });
+  updateDraggingHtml({ over: null });
+};
+
+const handleSearch = () => {
+  applyOrderFilters();
+};
+
+// Existing controls
+html.add.cancel?.addEventListener("click", handleAddToggle);
+html.other.add?.addEventListener("click", handleAddToggle);
+html.add.form?.addEventListener("submit", handleAddSubmit);
+
+html.other.grid?.addEventListener("click", handleEditToggle);
+html.edit.cancel?.addEventListener("click", handleEditToggle);
+html.edit.form?.addEventListener("submit", handleEditSubmit);
+html.edit.delete?.addEventListener("click", handleDelete);
+
+html.help.cancel?.addEventListener("click", handleHelpToggle);
+html.other.help?.addEventListener("click", handleHelpToggle);
+
+// Drag-and-drop: use event delegation so newly created cards work too.
+html.other.grid?.addEventListener("dragstart", handleDragStart);
+html.other.grid?.addEventListener("dragover", handleDragOver);
+html.other.grid?.addEventListener("drop", handleDrop);
+html.other.grid?.addEventListener("dragend", handleDragEnd);
+
+// Optional search and table filters.
+html.search?.addEventListener("input", handleSearch);
+html.tableFilter?.addEventListener("change", handleSearch);
+
+// Restore saved orders when the app starts.
+loadOrders();
+renderOrders();
+
+html.other.add?.focus();

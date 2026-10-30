@@ -1,110 +1,333 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kitchen Express</title>
+    <meta name="theme-color" content="#ffffff" />
+
+    <title>Kitchen Express | Restaurant Management</title>
+
     <link rel="stylesheet" href="./CSS/styles.css" />
     <script src="./JS/script.js" defer type="module"></script>
   </head>
 
   <body>
-    <header class="actions">
-      <h1 class="sr-only">Kitchen Express</h1>
-      <div class="actions__inner">
-        <button class="button button_primary" data-add>Add Order</button>
+    <!-- Header -->
+    <header class="header">
+      <div class="header__inner">
+        <a href="#" class="brand">
+          <div class="brand__icon">🍽️</div>
+          <div class="brand__content">
+            <h1>Kitchen Express</h1>
+            <span>Restaurant Management</span>
+          </div>
+        </a>
+
+        <div class="header__right">
+          <div class="restaurant-status">
+            <span class="status-dot"></span>
+            Restaurant Open
+          </div>
+
+          <button class="button button_primary header__add" data-add>
+            <span>+</span> Add Order
+          </button>
+        </div>
       </div>
     </header>
 
+    <main class="main">
+      <!-- Welcome -->
+      <section class="welcome">
+        <div>
+          <p class="welcome__eyebrow">RESTAURANT OVERVIEW</p>
+          <h2>Good afternoon! 👋</h2>
+          <p>Here's what's happening in your restaurant today.</p>
+        </div>
+
+        <div class="welcome__date">
+          <span class="welcome__date-icon">📅</span>
+          <span id="current-date">Today's Orders</span>
+        </div>
+      </section>
+
+      <!-- Statistics -->
+      <section class="stats">
+        <article class="stat-card">
+          <div class="stat-card__top">
+            <span>Total Orders</span>
+            <div class="stat-card__icon stat-card__icon--green">📋</div>
+          </div>
+          <h3 id="total-orders">0</h3>
+          <p>Orders received today</p>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-card__top">
+            <span>Active Orders</span>
+            <div class="stat-card__icon stat-card__icon--orange">🔥</div>
+          </div>
+          <h3 id="active-orders">0</h3>
+          <p>Currently being processed</p>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-card__top">
+            <span>Completed Orders</span>
+            <div class="stat-card__icon stat-card__icon--blue">✓</div>
+          </div>
+          <h3 id="completed-orders">0</h3>
+          <p>Successfully served</p>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-card__top">
+            <span>Revenue</span>
+            <div class="stat-card__icon stat-card__icon--purple">💰</div>
+          </div>
+          <h3 id="total-revenue">R0.00</h3>
+          <p>Today's revenue</p>
+        </article>
+      </section>
+
+      <!-- Orders -->
+      <section class="orders-section">
+        <div class="orders-section__header">
+          <div>
+            <h2>Order Management</h2>
+            <p>Manage and track your restaurant orders in real time.</p>
+          </div>
+
+          <div class="orders-section__legend">
+            <span><i class="legend-dot legend-dot--ordered"></i> Ordered</span>
+            <span
+              ><i class="legend-dot legend-dot--preparing"></i> Preparing</span
+            >
+            <span><i class="legend-dot legend-dot--served"></i> Served</span>
+          </div>
+        </div>
+
+        <div class="order-filters">
+          <input
+            type="search"
+            data-search
+            placeholder="Search orders or table numbers..."
+            aria-label="Search orders"
+          />
+
+          <select data-filter-table aria-label="Filter by table">
+            <option value="">All tables</option>
+            <option value="1">Table 1</option>
+            <option value="2">Table 2</option>
+            <option value="3">Table 3</option>
+            <option value="4">Table 4</option>
+            <option value="5">Table 5</option>
+            <option value="6">Table 6</option>
+            <option value="7">Table 7</option>
+            <option value="8">Table 8</option>
+            <option value="9">Table 9</option>
+            <option value="10">Table 10</option>
+            <option value="11">Table 11</option>
+            <option value="12">Table 12</option>
+            <option value="13">Table 13</option>
+            <!-- Add the remaining tables -->
+          </select>
+        </div>
+
+        <!-- Kanban board -->
+        <div class="grid" data-grid>
+          <section class="grid__column" data-area="ordered">
+            <div class="grid__heading">
+              <div class="grid__heading-left">
+                <span class="column-icon column-icon--ordered">📋</span>
+                <h3 class="grid__title">Ordered</h3>
+              </div>
+              <span class="column-count">01</span>
+            </div>
+
+            <div class="grid__content" data-column="ordered"></div>
+          </section>
+
+          <section class="grid__column" data-area="preparing">
+            <div class="grid__heading">
+              <div class="grid__heading-left">
+                <span class="column-icon column-icon--preparing">👨‍🍳</span>
+                <h3 class="grid__title">Preparing</h3>
+              </div>
+              <span class="column-count">02</span>
+            </div>
+
+            <div class="grid__content" data-column="preparing"></div>
+          </section>
+
+          <section class="grid__column" data-area="served">
+            <div class="grid__heading">
+              <div class="grid__heading-left">
+                <span class="column-icon column-icon--served">✓</span>
+                <h3 class="grid__title">Served</h3>
+              </div>
+              <span class="column-count">03</span>
+            </div>
+
+            <div class="grid__content" data-column="served"></div>
+          </section>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="footer">
+        <p>© 2026 Kitchen Express. Restaurant Order Management.</p>
+        <p>Made for better restaurant experiences. ❤️</p>
+      </footer>
+    </main>
+
+    <!-- Help Dialog -->
     <dialog class="overlay" data-help-overlay>
-      <h2 class="overlay__title">Help</h2>
-      <p><strong>To use the app, you can start by adding a new order by clicking the "add order" button.</strong></p>
-      <p>You can view and update orders by selecting them directly from the list. Inside the order, you can manually change information associated with an order or update its status. However, note that you can quickly change the status of an order by drag it between the three different columns with your mouse.</p>
+      <div class="overlay__top">
+        <div>
+          <span class="modal-eyebrow">GETTING STARTED</span>
+          <h2 class="overlay__title">How can we help?</h2>
+        </div>
+        <span class="modal-icon">💡</span>
+      </div>
+
+      <div class="help-content">
+        <div class="help-item">
+          <span>01</span>
+          <div>
+            <h3>Create an order</h3>
+            <p>Click Add Order to register a new restaurant order.</p>
+          </div>
+        </div>
+
+        <div class="help-item">
+          <span>02</span>
+          <div>
+            <h3>Manage orders</h3>
+            <p>Select an order to edit its details or update its status.</p>
+          </div>
+        </div>
+
+        <div class="help-item">
+          <span>03</span>
+          <div>
+            <h3>Update order progress</h3>
+            <p>Drag orders between Ordered, Preparing and Served.</p>
+          </div>
+        </div>
+      </div>
+
       <div class="overlay__row">
-        <button class="button" type="button" data-help-cancel>Close</button>
+        <button class="button button_primary" type="button" data-help-cancel>
+          Got it, thanks!
+        </button>
       </div>
     </dialog>
 
+    <!-- Add Order Dialog -->
     <dialog class="overlay" data-add-overlay>
       <div class="overlay__top">
-        <h2 class="overlay__title">Add Order</h2>
+        <div>
+          <span class="modal-eyebrow">ORDER MANAGEMENT</span>
+          <h2 class="overlay__title">Create New Order</h2>
+        </div>
+        <span class="modal-icon">🛒</span>
       </div>
 
       <form class="overlay__form" data-add-form id="add-form">
         <label class="overlay__field">
-          <div class="overlay__label">Item</div>
-          <input class="overlay__input" data-add-title name="title" required>
+          <div class="overlay__label">Order Item</div>
+          <input
+            class="overlay__input"
+            data-add-title
+            name="title"
+            placeholder="e.g. Beef Burger"
+            required
+          />
         </label>
 
         <label class="overlay__field">
-          <div class="overlay__label">Table</div>
-          <select class="overlay__input overlay__input_select" data-add-table name="table"></select>
+          <div class="overlay__label">Table Number</div>
+          <select
+            class="overlay__input overlay__input_select"
+            data-add-table
+            name="table"
+            required
+          ></select>
         </label>
-
       </form>
+
       <div class="overlay__row">
-        <button class="button" type="button" data-add-cancel>Cancel</button>
-        <button class="button button_primary" type="submit" form="add-form">Add</button>
+        <button class="button button_secondary" type="button" data-add-cancel>
+          Cancel
+        </button>
+
+        <button class="button button_primary" type="submit" form="add-form">
+          Create Order
+        </button>
       </div>
     </dialog>
 
+    <!-- Edit Order Dialog -->
     <dialog class="overlay" data-edit-overlay>
       <div class="overlay__top">
-        <h2 class="overlay__title">Edit Order</h2>
-        <button class="overlay__delete" data-edit-delete>Delete</button>
+        <div>
+          <span class="modal-eyebrow">ORDER MANAGEMENT</span>
+          <h2 class="overlay__title">Update Order</h2>
+        </div>
+
+        <button class="overlay__delete" type="button" data-edit-delete>
+          Delete
+        </button>
       </div>
 
       <form class="overlay__form" data-edit-form id="edit-form">
-        <input hidden name="id" data-edit-id>
+        <input hidden name="id" data-edit-id />
 
         <label class="overlay__field">
-          <div class="overlay__label">Item</div>
-          <input class="overlay__input" data-edit-title name="title" required>
+          <div class="overlay__label">Order Item</div>
+          <input class="overlay__input" data-edit-title name="title" required />
         </label>
 
         <label class="overlay__field">
-          <div class="overlay__label">Table</div>
-          <select class="overlay__input overlay__input_select" data-edit-table name="table"></select>
+          <div class="overlay__label">Table Number</div>
+          <select
+            class="overlay__input overlay__input_select"
+            data-edit-table
+            name="table"
+            required
+          ></select>
         </label>
 
         <label class="overlay__field">
-          <div class="overlay__label">Status</div>
-
-          <select class="overlay__input overlay__input_select" data-edit-column name="column">
+          <div class="overlay__label">Order Status</div>
+          <select
+            class="overlay__input overlay__input_select"
+            data-edit-column
+            name="column"
+          >
             <option value="ordered">Ordered</option>
             <option value="preparing">Preparing</option>
             <option value="served">Served</option>
           </select>
         </label>
-
       </form>
+
       <div class="overlay__row">
-        <button class="button" type="button" data-edit-cancel>Cancel</button>
-        <button class="button button_primary" type="submit" form="edit-form">Update</button>
+        <button class="button button_secondary" type="button" data-edit-cancel>
+          Cancel
+        </button>
+
+        <button class="button button_primary" type="submit" form="edit-form">
+          Save Changes
+        </button>
       </div>
     </dialog>
 
-    <h2 class="sr-only">Orders</h2>
+    <!-- Help Button -->
+    <button class="help" type="button" data-help aria-label="Help">?</button>
 
-    <div class="grid" data-grid>
-      <section class="grid__column" data-area="ordered">
-        <h2 class="grid__title">🤵 Ordered</h2>
-        <div class="grid__content" data-column="ordered"></div>
-      </section>
-
-      <section class="grid__column" data-area="preparing">
-        <h2 class="grid__title">👩‍🍳 Preparing</h2>
-        <div class="grid__content" data-column="preparing"></div>
-      </section>
-
-      <section class="grid__column grid__column_last" data-area="served">
-        <h2 class="grid__title">👩‍💼 Served</h2>
-        <div class="grid__content" data-column="served"></div>
-      </section>
-    </div>
-
-    <button class="help" data-help>?</button>
     <div class="backdrop"></div>
   </body>
 </html>
