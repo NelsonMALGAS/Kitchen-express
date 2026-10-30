@@ -25,13 +25,20 @@
         </a>
 
         <div class="header__right">
-          <div class="restaurant-status">
+          <button
+            class="restaurant-status"
+            id="restaurant-status"
+            type="button"
+          >
             <span class="status-dot"></span>
-            Restaurant Open
-          </div>
+            <span class="status-text">Restaurant Open</span>
+          </button>
 
           <button class="button button_primary header__add" data-add>
             <span>+</span> Add Order
+          </button>
+          <button type="button" data-menu class="button button--secondary">
+            Manage Menu
           </button>
         </div>
       </div>
@@ -236,26 +243,49 @@
       </div>
 
       <form class="overlay__form" data-add-form id="add-form">
-        <label class="overlay__field">
-          <div class="overlay__label">Order Item</div>
+        <h2>Create Order</h2>
+
+        <label for="add-table">Table</label>
+        <select id="add-table" data-add-table required></select>
+
+        <div class="order-builder">
+          <h3>Add Menu Items</h3>
+
+          <label for="add-menu">Menu item</label>
+          <select id="add-menu" data-add-menu required></select>
+
+          <label for="add-quantity">Quantity</label>
           <input
-            class="overlay__input"
-            data-add-title
-            name="title"
-            placeholder="e.g. Beef Burger"
+            id="add-quantity"
+            data-add-quantity
+            type="number"
+            min="1"
+            value="1"
             required
           />
-        </label>
 
-        <label class="overlay__field">
-          <div class="overlay__label">Table Number</div>
-          <select
-            class="overlay__input overlay__input_select"
-            data-add-table
-            name="table"
-            required
-          ></select>
-        </label>
+          <label for="add-instructions">Special instructions</label>
+          <input
+            id="add-instructions"
+            data-add-instructions
+            type="text"
+            placeholder="e.g. No onions, extra sauce"
+          />
+
+          <button type="button" data-add-item>Add Item</button>
+
+          <div data-add-items class="order-builder__items"></div>
+
+          <div class="order-builder__total">
+            <span>Order Total</span>
+            <strong data-builder-total>R0.00</strong>
+          </div>
+        </div>
+
+        <div class="form__actions">
+          <button type="button" data-add-cancel>Cancel</button>
+          <button type="submit">Create Order</button>
+        </div>
       </form>
 
       <div class="overlay__row">
@@ -283,35 +313,59 @@
       </div>
 
       <form class="overlay__form" data-edit-form id="edit-form">
-        <input hidden name="id" data-edit-id />
+        <h2>Edit Order</h2>
 
-        <label class="overlay__field">
-          <div class="overlay__label">Order Item</div>
-          <input class="overlay__input" data-edit-title name="title" required />
-        </label>
+        <input type="hidden" data-edit-id />
 
-        <label class="overlay__field">
-          <div class="overlay__label">Table Number</div>
-          <select
-            class="overlay__input overlay__input_select"
-            data-edit-table
-            name="table"
+        <label for="edit-table">Table</label>
+        <select id="edit-table" data-edit-table required></select>
+
+        <label for="edit-column">Order Status</label>
+        <select id="edit-column" data-edit-column>
+          <option value="ordered">Ordered</option>
+          <option value="preparing">Preparing</option>
+          <option value="served">Served</option>
+        </select>
+
+        <div class="order-builder">
+          <h3>Add Menu Items</h3>
+
+          <label for="edit-menu">Menu item</label>
+          <select id="edit-menu" data-edit-menu required></select>
+
+          <label for="edit-quantity">Quantity</label>
+          <input
+            id="edit-quantity"
+            data-edit-quantity
+            type="number"
+            min="1"
+            value="1"
             required
-          ></select>
-        </label>
+          />
 
-        <label class="overlay__field">
-          <div class="overlay__label">Order Status</div>
-          <select
-            class="overlay__input overlay__input_select"
-            data-edit-column
-            name="column"
-          >
-            <option value="ordered">Ordered</option>
-            <option value="preparing">Preparing</option>
-            <option value="served">Served</option>
-          </select>
-        </label>
+          <label for="edit-instructions">Special instructions</label>
+          <input
+            id="edit-instructions"
+            data-edit-instructions
+            type="text"
+            placeholder="e.g. No onions"
+          />
+
+          <button type="button" data-edit-item>Add Item</button>
+
+          <div data-edit-items class="order-builder__items"></div>
+
+          <div class="order-builder__total">
+            <span>Order Total</span>
+            <strong data-builder-total>R0.00</strong>
+          </div>
+        </div>
+
+        <div class="form__actions">
+          <button type="button" data-edit-cancel>Cancel</button>
+          <button type="button" data-edit-delete>Delete Order</button>
+          <button type="submit">Save Changes</button>
+        </div>
       </form>
 
       <div class="overlay__row">
@@ -322,6 +376,47 @@
         <button class="button button_primary" type="submit" form="edit-form">
           Save Changes
         </button>
+      </div>
+    </dialog>
+
+    <dialog class="overlay" data-menu-overlay>
+      <form data-menu-form>
+        <h2>Menu Management</h2>
+
+        <input type="hidden" data-menu-id />
+
+        <label for="menu-name">Item name</label>
+        <input
+          id="menu-name"
+          data-menu-name
+          type="text"
+          placeholder="e.g. Chicken Burger"
+          required
+        />
+
+        <label for="menu-category">Category</label>
+        <select id="menu-category" data-menu-category required></select>
+
+        <label for="menu-price">Price (R)</label>
+        <input
+          id="menu-price"
+          data-menu-price
+          type="number"
+          min="0"
+          step="0.01"
+          placeholder="85.00"
+          required
+        />
+
+        <div class="form__actions">
+          <button type="button" data-menu-cancel>Close</button>
+          <button type="submit">Save Menu Item</button>
+        </div>
+      </form>
+
+      <div class="menu-management">
+        <h3>Current Menu</h3>
+        <div data-menu-list></div>
       </div>
     </dialog>
 

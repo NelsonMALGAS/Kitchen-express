@@ -60,6 +60,109 @@ button {
   cursor: pointer;
 }
 
+/* =========================================
+   GLOBAL BUTTON STYLES
+========================================= */
+
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 9px 16px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+button:focus-visible {
+  outline: 3px solid rgba(0, 160, 70, 0.2);
+  outline-offset: 2px;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Primary buttons */
+button[type="submit"],
+.btn-primary {
+  background: #00a046;
+  color: #fff;
+  border-color: #00a046;
+}
+
+button[type="submit"]:hover,
+.btn-primary:hover {
+  background: #008a3c;
+  border-color: #008a3c;
+}
+
+/* Secondary buttons */
+.btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+  border-color: #e5e7eb;
+}
+
+.btn-secondary:hover {
+  background: #e5e7eb;
+}
+
+/* Danger buttons */
+.btn-danger {
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+.btn-danger:hover {
+  background: #fee2e2;
+}
+
+/* Outline buttons */
+.btn-outline {
+  background: #fff;
+  color: #374151;
+  border-color: #d1d5db;
+}
+
+.btn-outline:hover {
+  background: #f9fafb;
+}
+
+/* Small buttons */
+.btn-sm {
+  min-height: 32px;
+  padding: 6px 11px;
+  font-size: 0.78rem;
+}
+
+/* Icon-only buttons */
+.btn-icon {
+  width: 38px;
+  height: 38px;
+  min-height: 38px;
+  padding: 0;
+  border-radius: 8px;
+}
+
 .sr-only {
   position: absolute;
   left: -10000px;
@@ -166,20 +269,47 @@ button {
 }
 
 .restaurant-status {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: var(--primary-dark);
+  gap: 9px;
+  padding: 9px 14px;
+  border: 1px solid #bbf7d0;
+  border-radius: 30px;
+  background: #f0fdf4;
+  color: #15803d;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.restaurant-status:hover {
+  background: #dcfce7;
 }
 
 .status-dot {
   width: 9px;
   height: 9px;
-  background: var(--primary);
   border-radius: 50%;
-  box-shadow: 0 0 0 4px var(--primary-light);
+  background: #16a34a;
+  box-shadow: 0 0 0 3px #bbf7d0;
+}
+
+/* Closed state */
+.restaurant-status.closed {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #dc2626;
+}
+
+.restaurant-status.closed:hover {
+  background: #fee2e2;
+}
+
+.restaurant-status.closed .status-dot {
+  background: #dc2626;
+  box-shadow: 0 0 0 3px #fecaca;
 }
 
 /* =========================================
@@ -844,6 +974,358 @@ input:focus-visible,
 select:focus-visible {
   outline: 3px solid rgba(0, 160, 70, 0.3);
   outline-offset: 3px;
+}
+
+/* Order builder */
+.order-builder {
+  margin-top: 22px;
+  padding: 18px;
+  background: #f8faf9;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.order-builder h3 {
+  margin: 0 0 16px;
+}
+
+.order-builder label {
+  display: block;
+  margin: 12px 0 6px;
+  font-weight: 600;
+}
+
+.order-builder input,
+.order-builder select,
+form[data-add-form] input,
+form[data-add-form] select,
+form[data-edit-form] input,
+form[data-edit-form] select,
+form[data-menu-form] input,
+form[data-menu-form] select {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+  border: 1px solid #dce3df;
+  border-radius: 8px;
+  font: inherit;
+  background: white;
+}
+
+.order-builder button,
+.menu-management button {
+  cursor: pointer;
+  border: 0;
+  border-radius: 7px;
+  padding: 9px 14px;
+  font: inherit;
+  font-weight: 600;
+}
+
+.order-builder > button {
+  margin-top: 14px;
+  color: white;
+  background: #00a046;
+}
+
+.order-builder__items {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.order-builder__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.order-builder__item > div {
+  display: grid;
+  gap: 4px;
+}
+
+.order-builder__item small {
+  color: #64748b;
+}
+
+.order-builder__item .remove-item {
+  color: #dc2626;
+  background: #fee2e2;
+}
+
+.order-builder__total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid #dce3df;
+  font-size: 1.05rem;
+}
+
+.empty-items {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+/* Order cards */
+.order__header,
+.order__item-main,
+.order__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.order__header {
+  margin-bottom: 14px;
+}
+
+.order__title {
+  font-weight: 700;
+}
+
+.order__time {
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
+.order__items {
+  display: grid;
+  gap: 10px;
+}
+
+.order__item {
+  padding-bottom: 9px;
+  border-bottom: 1px solid #edf0ee;
+}
+
+.order__item-main {
+  font-size: 0.9rem;
+}
+
+.order__item small {
+  display: block;
+  margin-top: 4px;
+  color: #64748b;
+}
+
+.order__footer {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #edf0ee;
+  font-size: 0.85rem;
+}
+
+.order__footer strong {
+  color: #008b3c;
+  font-size: 1rem;
+}
+
+/* Menu management */
+.menu-management {
+  margin-top: 24px;
+}
+
+.menu-management__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.menu-management__item > div:first-child {
+  display: grid;
+  gap: 4px;
+}
+
+.menu-management__item small {
+  color: #64748b;
+}
+
+.menu-management__actions {
+  display: flex;
+  gap: 6px;
+}
+
+.menu-management__actions button:first-child {
+  color: #166534;
+  background: #dcfce7;
+}
+
+.menu-management__actions button:last-child {
+  color: #b91c1c;
+  background: #fee2e2;
+}
+
+/* Drag-and-drop feedback */
+.order.dragging {
+  opacity: 0.45;
+}
+
+/* Disabled application controls */
+body.restaurant-closed button:disabled,
+body.restaurant-closed input:disabled,
+body.restaurant-closed select:disabled,
+body.restaurant-closed textarea:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Closed restaurant indicator */
+.restaurant-status.closed {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #dc2626;
+}
+
+.restaurant-status.closed .status-dot {
+  background: #dc2626;
+  box-shadow: 0 0 0 3px #fecaca;
+}
+
+/* Keep the status toggle interactive */
+.restaurant-status {
+  opacity: 1 !important;
+  cursor: pointer !important;
+}
+
+@media (max-width: 600px) {
+  .menu-management__item {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .order-builder__item {
+    align-items: flex-start;
+  }
+}
+
+/* Menu Management Buttons */
+
+.menu-management__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.menu-management__actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 7px 13px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.menu-management__actions button:first-child {
+  color: #087a38;
+  background: #e8f7ee;
+  border-color: #c5ebd2;
+}
+
+.menu-management__actions button:first-child:hover {
+  color: #ffffff;
+  background: #00a046;
+  transform: translateY(-1px);
+}
+
+.menu-management__actions button:last-child {
+  color: #dc2626;
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.menu-management__actions button:last-child:hover {
+  color: #ffffff;
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+.menu-management__actions button:focus-visible {
+  outline: 3px solid rgba(0, 160, 70, 0.25);
+  outline-offset: 2px;
+}
+
+@media (max-width: 480px) {
+  .menu-management__actions {
+    width: 100%;
+  }
+
+  .menu-management__actions button {
+    flex: 1;
+  }
+}
+
+/* Menu item dialog footer buttons */
+[data-menu-form] button,
+[data-menu-cancel] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 9px 18px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+/* Save Menu Item */
+[data-menu-form] button[type="submit"] {
+  color: #fff;
+  background: #00a046;
+}
+
+[data-menu-form] button[type="submit"]:hover {
+  background: #008a3c;
+  transform: translateY(-1px);
+}
+
+/* Close */
+[data-menu-cancel] {
+  color: #374151;
+  background: #f3f4f6;
+  border-color: #e5e7eb;
+}
+
+[data-menu-cancel]:hover {
+  background: #e5e7eb;
+}
+
+/* Button layout */
+[data-menu-form] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+[data-menu-form] button {
+  flex: 1;
 }
 
 /* =========================================
